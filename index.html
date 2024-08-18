@@ -613,7 +613,7 @@
             }
             
             // output the new warming degree on the terminal
-            addDegree = (Math.round(warmingDegree - currentDegree) * 10000) / 10000;
+            addDegree = (warmingDegree - currentDegree)
             
             console.log('Last degree: ' + currentDegree + '°C'+', CFP value: ' + carbonfootprint + ', Last adjustment: ' + addDegree + '°C');
             
