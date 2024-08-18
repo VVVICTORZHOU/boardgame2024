@@ -196,6 +196,17 @@
             font-size: 16px;
         }
 
+        .report-issue {
+            
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .report-issue button {
+            font-size: 16px;
+        }
+
         .slider {
             position: absolute;
             cursor: pointer;
@@ -488,8 +499,13 @@
             </label>
         </div>
         <div class="reset">
-            <span>RESET SCORES</span>
-            <button onclick="resetAllScores()">RESET ALL</button>
+            <span>RESET VALUES</span>
+            <button onclick="resetAllScores()">RESET</button>
+        </div>
+        <div class="report-issue">
+            <span>REPORT ISSUES</span>
+            <a href="https://github.com/VVVICTORZHOU/boardgame2024/issues" target="_blank"><button>REPORT</button></a>
+       
         </div>
         <div class="version-info">
             Version 1.0.1 | Developed by 周彥廷
@@ -586,11 +602,11 @@
             }
             
             // output the new warming degree on the terminal
-            addDegree = warmingDegree - currentDegree;
-            console.log('CFP value: ' + carbonfootprint + ', Last adjustment: ' + addDegree + '°C');
+            addDegree = (Math.round(warmingDegree - currentDegree) * 10000) / 10000;
+            
+            console.log('Last degree: ' + currentDegree + '°C'+', CFP value: ' + carbonfootprint + ', Last adjustment: ' + addDegree + '°C');
             
             // round the new warming degree to 3 decimal place
-            
             currentDegree = (Math.round(warmingDegree * 10000) / 10000)
             updateWarmingDegree(warmingDegree);
             
@@ -648,6 +664,7 @@
        
         }
         });
+
     });
     </script>
 </body>
