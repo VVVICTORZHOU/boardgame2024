@@ -63,6 +63,7 @@
             color: #333;
             background-color: #f0f0f0;
             border: 1px solid #ccc;
+            border-radius: 5px;
         }
         button:hover {
             background-color: #e0e0e0;
@@ -92,11 +93,19 @@
         #settings-panel.open {
             right: 0;
         }
+
+        #settings-panel h2 {
+            margin-bottom: 20px;
+            border: none;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #888;
+        }
+
         .switch {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         .toggle {
             position: relative;
@@ -109,6 +118,16 @@
             width: 0;
             height: 0;
         }
+        .reset {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .reset button {
+            font-size: 16px;
+        }
+
         .slider {
             position: absolute;
             cursor: pointer;
@@ -161,6 +180,11 @@
             background-color: #333;
             color: #fff;
         }
+        body.dark-mode .settings-panel h2 {
+            border-bottom: 2px solid #fff;
+        }
+       
+
         body.dark-mode .player-name {
             color: #fff;
             border-bottom-color: #fff;
@@ -171,9 +195,21 @@
             background-color: #555;
             border: 1px solid #555;
         }
+
+        body.dark-mode .reset button {
+            color: #fff;
+            background-color: #555;
+            border: 1px solid #555;
+        }
+
         body.dark-mode .buttons button:hover {
             background-color: #666;
         }
+
+        body.dark-mode .reset button:hover {
+            background-color: #666;
+        }
+
         body.dark-mode .slider {
             background-color: #666;
         }
@@ -226,7 +262,6 @@
         <div class="buttons">
             <button onclick="updateScore(this, -10)">-10</button>
             <button onclick="updateScore(this, -1)">-1</button>
-            <button onclick="resetScore(this)">RESET</button>
             <button onclick="updateScore(this, 1)">+1</button>
             <button onclick="updateScore(this, 10)">+10</button>
         </div>
@@ -237,7 +272,6 @@
         <div class="buttons">
             <button onclick="updateScore(this, -10)">-10</button>
             <button onclick="updateScore(this, -1)">-1</button>
-            <button onclick="resetScore(this)">RESET</button>
             <button onclick="updateScore(this, 1)">+1</button>
             <button onclick="updateScore(this, 10)">+10</button>
         </div>
@@ -248,7 +282,6 @@
         <div class="buttons">
             <button onclick="updateScore(this, -10)">-10</button>
             <button onclick="updateScore(this, -1)">-1</button>
-            <button onclick="resetScore(this)">RESET</button>
             <button onclick="updateScore(this, 1)">+1</button>
             <button onclick="updateScore(this, 10)">+10</button>
         </div>
@@ -259,7 +292,6 @@
         <div class="buttons">
             <button onclick="updateScore(this, -10)">-10</button>
             <button onclick="updateScore(this, -1)">-1</button>
-            <button onclick="resetScore(this)">RESET</button>
             <button onclick="updateScore(this, 1)">+1</button>
             <button onclick="updateScore(this, 10)">+10</button>
         </div>
@@ -268,7 +300,7 @@
     <button id="settings-btn" onclick="toggleSettings()">⚙️</button>
     <div id="settings-panel">
         <button id="close-btn" onclick="toggleSettings()">✖</button>
-        <h2>SETTING</h2>
+        <h2>SETTINGS</h2>
         <div class="switch">
             <span>DARK MODE</span>
             <label class="toggle">
@@ -276,6 +308,11 @@
                 <span class="slider"></span>
             </label>
         </div>
+        <div class="reset">
+            <span>RESET SCORES</span>
+            <button onclick="resetAllScores()">RESET ALL</button>
+        </div>
+
     </div>
 
     <script>
@@ -285,6 +322,12 @@
             let score = parseInt(scoreElement.textContent);
             score += value;
             scoreElement.textContent = score;
+            if (score < 0) {
+                scoreElement.style.color = '#b12';
+            } else {
+                scoreElement.style.color = '';
+            }
+       
         }
 
         function resetScore(button) {
@@ -292,6 +335,14 @@
             const scoreElement = quadrant.querySelector('.score');
             scoreElement.textContent = '0';
         }
+
+        function resetAllScores() {
+            document.querySelectorAll('.score').forEach(score => score.textContent = '0');
+            document.querySelectorAll('.score').forEach(score => score.style.color = '');
+        
+        }
+
+       
 
         function toggleSettings() {
             const panel = document.getElementById('settings-panel');
