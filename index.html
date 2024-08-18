@@ -354,7 +354,7 @@
             }
 
             #last-quadrant {
-                margin-bottom: 4em;
+                margin-bottom: 3em;
             }
             .player-name {
                 font-size: 20px;
@@ -530,6 +530,8 @@
             document.querySelectorAll('.score').forEach(score => score.style.color = '');
             document.querySelector('.total-score').textContent = '1.5°C';
             currentDegree = 1.5;
+            console.log('All scores have been reset.');
+        
         }
 
         function toggleSettings() {
@@ -584,7 +586,7 @@
             }
             
             // output the new warming degree on the terminal
-            console.log('Current warming degree: ' + currentDegree + '°C, ' + 'Recorded CFP value: ' + carbonfootprint + ', New warming degree: ' + warmingDegree + '°C');
+            console.log('Current degree: ' + currentDegree + '°C, ' + 'CFP value: ' + carbonfootprint + ', New degree: ' + warmingDegree + '°C');
             
             // round the new warming degree to 3 decimal place
             
