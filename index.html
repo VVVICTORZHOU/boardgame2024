@@ -19,7 +19,7 @@
             height: 100vh;
             transition: background-color 0.3s, color 0.3s;
         }
-        .total-score-container {
+        .warming-degree-container {
             width: 100%;
             background-color: #334399;
             padding: 10px 0;
@@ -29,18 +29,32 @@
             flex-direction: column;
             color: #fff;
         }
-        .total-score-title {
+        .warming-degree-title {
             font-size: 24px;
             color: #fff;
             margin-bottom: 5px;
             font-family: 'HWYGWDE', Arial, sans-serif;
         }
-        .total-score-content {
+        .warming-degree-content {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 20px;
         }
+        
+        .warming-degree-score-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .score-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Adjust this value to control the space between the elements */
+        }
+
         .total-score {
             font-family: 'HWYGWDE', Arial, sans-serif;
             font-size: 60px;
@@ -48,18 +62,24 @@
             color: #fff;
             margin-bottom: 5px;
         }
-        .total-score-buttons {
-            display: flex;
-            gap: 10px;
+        .score-wrapper #carbonfootprint-display {
+            font-family: 'HWYGWDE', Arial, sans-serif;
+            font-size: 30px;
+            color: #888;
         }
-        .total-score-buttons button {
-            font-size: 20px;
-            padding: 5px 10px;
+
+        .icon-button {
+            width: 40px; /* Adjust this value to change the size of the icons */
+            height: auto;
             cursor: pointer;
-            color: #333;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            margin: 5px;
+            padding: 5px;
+            border: none;
+            background: none;
+        }
+
+        .icon-button:hover {
+            opacity: 0.8;
         }
 
         .quadrants-container {
@@ -330,18 +350,17 @@
     </style>
 </head>
 <body>
-    <div class="total-score-container">
-        <div class="total-score-title">WARMING DEGREE</div>
-        <div class="total-score">0.0°C</div>
-        <div class="total-score-content">
-            <div class="total-score-buttons">
-                <button onclick="updateTotalScore(-1)">-1.0</button>
-                <button onclick="updateTotalScore(-0.1)">-0.1</button>
-            </div>
-            
-            <div class="total-score-buttons">
-                <button onclick="updateTotalScore(0.1)">+0.1</button>
-                <button onclick="updateTotalScore(1)">+1.0</button>
+    <div class="warming-degree-container">
+        <div class="warming-degree-title">WARMING DEGREE</div>
+        <div class="score-wrapper">
+            <div class="total-score">1.5°C</div>
+            <div id="carbonfootprint-display">0</div>
+        </div>
+        <div class="warming-degree-content">
+            <div class="warming-degree-buttons">
+                <img src="DeCarbonFootprint.png" alt="-0.1" class="icon-button" onclick="updatecarbonfootprint(-1)">
+                <img src="CarbonFootprint.png" alt="+0.1" class="icon-button" onclick="updatecarbonfootprint(1)">
+                <img src="RoundOver.png" alt="+1.0" class="icon-button" onclick="submitAndReset()">
             </div>
         </div>
     </div>
@@ -398,6 +417,13 @@
                 <span class="slider"></span>
             </label>
         </div>
+        <div class="switch">
+            <span>SHOW CFP</span>
+            <label class="toggle">
+                <input type="checkbox" id="show-cfp-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
         <div class="theme">
             <span>THEME</span>
             <div class="color-options">
@@ -431,11 +457,11 @@
        
         }
 
-        function updateTotalScore(value) {
-            const totalScoreElement = document.querySelector('.total-score');
-            let currentScore = parseFloat(totalScoreElement.textContent);
+        function updateWarmingDegree(value) {
+            const WarmingDegreeElement = document.querySelector('.total-score');
+            let currentScore = parseFloat(WarmingDegreeElement.textContent);
             currentScore += value;
-            totalScoreElement.textContent = currentScore.toFixed(1) + '°C';
+            WarmingDegreeElement.textContent = currentScore.toFixed(1) + '°C';
         }
 
         function resetScore(button) {
@@ -460,9 +486,44 @@
         }
 
         function changeTheme(color) {
-            document.querySelector('.total-score-container').style.backgroundColor = color;
+            document.querySelector('.warming-degree-container').style.backgroundColor = color;
         }
 
+        let carbonfootprint = 0;
+
+        function updatecarbonfootprint(value) {
+            carbonfootprint += value;
+            document.getElementById('carbonfootprint-display').textContent = carbonfootprint;
+        }
+
+        function submitAndReset() {
+            updateWarmingDegree(carbonfootprint * 0.1);  // Assuming each unit corresponds to 0.1°C
+            carbonfootprint = 0;
+            document.getElementById('carbonfootprint-display').textContent = carbonfootprint;
+        }
+
+        function updateWarmingDegree(value) {
+            let currentDegree = parseFloat(document.querySelector('.total-score').textContent);
+            let newDegree = Math.round((currentDegree + value) * 10) / 10;  // Round to 1 decimal place
+            document.querySelector('.total-score').textContent = newDegree.toFixed(1) + '°C';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const darkModeToggle = document.getElementById('show-cfp-toggle');
+        const body = document.body;
+        const carbonfootprintDisplay = document.getElementById('carbonfootprint-display');
+
+        darkModeToggle.addEventListener('change', function() {
+        if (this.checked) {
+            body.classList.add('show-cfp');
+            carbonfootprintDisplay.style.display = 'block';
+        } else {
+            body.classList.remove('show-cfp');
+            carbonfootprintDisplay.style.display = 'none';
+       
+        }
+        });
+    });
     </script>
 </body>
 </html>
