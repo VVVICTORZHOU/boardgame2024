@@ -331,11 +331,21 @@
             border: 1px solid #555;
         }
 
+        body.dark-mode .report-issue button {
+            color: #fff;
+            background-color: #555;
+            border: 1px solid #555;
+        }
+
         body.dark-mode .buttons button:hover {
             background-color: #666;
         }
 
         body.dark-mode .reset button:hover {
+            background-color: #666;
+        }
+
+        body.dark-mode .report-issue button:hover {
             background-color: #666;
         }
 
@@ -400,7 +410,8 @@
         <div class="warming-degree-title">WARMING DEGREE</div>
         <div class="score-wrapper">
             <div class="total-score">1.5°C</div>
-            <div id="carbonfootprint-display">0</div>
+            <div id="carbonfootprint-display" style="display: none;">0</div>
+       
         </div>
         <div class="warming-degree-content">
             <div class="warming-degree-buttons">
@@ -468,7 +479,7 @@
             </label>
         </div>
         <div class="switch">
-            <span>HIDE CFP</span>
+            <span>SHOW CFP</span>
             <label class="toggle">
                 <input type="checkbox" id="show-cfp-toggle">
                 <span class="slider"></span>
@@ -657,10 +668,10 @@
         darkModeToggle.addEventListener('change', function() {
         if (this.checked) {
             body.classList.add('show-cfp');
-            carbonfootprintDisplay.style.display = 'none';
+            carbonfootprintDisplay.style.display = 'block';
         } else {
             body.classList.remove('show-cfp');
-            carbonfootprintDisplay.style.display = 'block';
+            carbonfootprintDisplay.style.display = 'none';
        
         }
         });
