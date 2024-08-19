@@ -265,7 +265,7 @@
             left: 0;
             width: 100%;
             height: 4em;
-            background-color: #333;
+            background-color: #222;
             color: white;
             font-family: monospace;
             overflow-y: auto;
@@ -290,7 +290,52 @@
             font-size: 12px;
             color: #888;
         }
+        .popup-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
 
+        .popup-content {
+            background-color: #e0e0e0;
+            margin: 10% auto;
+            border-radius: 5px;
+            padding: 20px;
+            width: 95%;
+            position: relative;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .environ-icons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .environ-icons img {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+        }
 
 
 
@@ -358,6 +403,14 @@
         }
 
         body.dark-mode #close-btn {
+            color: #fff;
+        }
+        .dark-mode .popup-content {
+            background-color: #222;
+            color: #fff;
+        }
+        .dark-mode .close-btn:hover,
+        .dark-mode .close-btn:focus {
             color: #fff;
         }
 
@@ -522,6 +575,15 @@
             Version 1.0.1 | Developed by 周彥廷
         </div>
     </div>
+    <div id="round-over-popup" class="popup-container" style="display: none;">
+        <div class="popup-content">
+          <span class="close-btn">&times;</span>
+          <p>This is an example text for the round over popup. You can customize this message as needed.</p>
+          <div class="environ-icons">
+            <!-- 20 Environ.png icons will be added here dynamically -->
+          </div>
+        </div>
+      </div>
 
     <script>
         function updateScore(button, value) {
@@ -597,9 +659,9 @@
             let warmingRateCoef_C = 0;
             // Adjust warming rate based on difficulty:
             if (isHardMode) {
-                warmingRateCoef_A = 0.05;
+                warmingRateCoef_A = 0.04;
                 warmingRateCoef_B = 0.001;
-                warmingRateCoef_C = 0.0001;
+                warmingRateCoef_C = 0.0002;
             } else {
                 warmingRateCoef_A = 0.02;
                 warmingRateCoef_B = 0.002;
@@ -623,8 +685,45 @@
             
             carbonfootprint = 0;
             document.getElementById('carbonfootprint-display').textContent = carbonfootprint;
+
+            showRoundOverPopup();
+        }
+        function showRoundOverPopup() {
+            const popup = document.getElementById('round-over-popup');
+            const iconContainer = popup.querySelector('.environ-icons');
+            
+            // 清空原有的圖標
+            iconContainer.innerHTML = '';
+            
+            // 添加20個Environ.png圖標
+            for (let i = 0; i < 20; i++) {
+                const img = document.createElement('img');
+                img.src = 'Environ.png';
+                img.alt = 'Environ Icon';
+                iconContainer.appendChild(img);
+            }
+            
+            popup.style.display = 'block';
         }
 
+        // 關閉彈窗的函數
+        function closeRoundOverPopup() {
+            const popup = document.getElementById('round-over-popup');
+            popup.style.display = 'none';
+            }
+
+            // 為關閉按鈕添加事件監聽器
+            document.querySelector('.close-btn').addEventListener('click', closeRoundOverPopup);
+
+            // 點擊彈窗外部區域也可以關閉彈窗
+            window.addEventListener('click', function(event) {
+            const popup = document.getElementById('round-over-popup');
+            if (event.target == popup) {
+                closeRoundOverPopup();
+        }
+        });
+
+       
         function updateWarmingDegree(value) {
             let currentDegree = parseFloat(document.querySelector('.total-score').textContent);
             let newDegree = Math.round((value) * 10) / 10;  // Round to 1 decimal place
