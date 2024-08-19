@@ -344,6 +344,7 @@
             font-weight: bold;
             text-align: center;
             color: #111;
+            margin-bottom: 5px;
         }
 
         .popup-content .event-subtitle {
@@ -353,6 +354,7 @@
             border: none;
             padding-bottom: 10px;
             border-bottom: 2px solid #888;
+            margin-top: 5px;
         }
 
         .popup-content .event-attr-container {
@@ -747,7 +749,7 @@
        
         </div>
         <div class="version-info">
-            Version 1.0.3 | Developed by 周彥廷
+            Version 1.0.4 | Developed by 周彥廷
         </div>
     </div>
     <!-- 事件卡彈窗 -->
@@ -866,7 +868,7 @@
             let warmingRateCoef_C = 0;
             // Adjust warming rate based on difficulty:
             if (isHardMode) {
-                warmingRateCoef_A = 0.04;
+                warmingRateCoef_A = 0.03;
                 warmingRateCoef_B = 0.001;
                 warmingRateCoef_C = 0.0002;
             } else {
@@ -904,31 +906,68 @@
                                         '極地渦旋侵襲','極地渦旋侵襲','極地渦旋侵襲',
                                         '持續性乾旱','持續性乾旱','持續性乾旱','持續性乾旱',
                                         '超級熱帶風暴','超級熱帶風暴',
+                                        '森林野火','森林野火','森林野火',
+                                        '炸彈低壓侵襲','炸彈低壓侵襲',
+                                        '年度大潮海水倒灌','年度大潮海水倒灌','年度大潮海水倒灌',
+                                        '破紀錄洪水','破紀錄洪水',
+                                        '破紀錄熱浪','破紀錄熱浪','破紀錄熱浪','破紀錄熱浪','破紀錄熱浪',
+                                        '沙塵暴',
+                                        '梅雨鋒面極端暴雨','梅雨鋒面極端暴雨',
+
                                     ];
             eventSubtitles =        [
                                         'Sea Level Rise','Sea Level Rise','Sea Level Rise',
                                         'Polar Vortex','Polar Vortex','Polar Vortex',
                                         'Persistent Drought','Persistent Drought','Persistent Drought','Persistent Drought',
                                         'Super Tropical Cyclone','Super Tropical Cyclone',
+                                        'Forest Wildfire','Forest Wildfire','Forest Wildfire',
+                                        'Explosive Cyclone','Explosive Cyclone',
+                                        'Seawater Inundation','Seawater Inundation','Seawater Inundation',
+                                        'Record-breaking Flood','Record-breaking Flood',
+                                        'Record-breaking Heatwave','Record-breaking Heatwave','Record-breaking Heatwave','Record-breaking Heatwave','Record-breaking Heatwave',
+                                        'Dust Storm',
+                                        'Extreme Rainfall in Mei-Yu Front','Extreme Rainfall in Mei-Yu Front',
+                                   
                                     ];
             eventRegions =          [
                                         'REGION D','REGION E','REGION F',
                                         'REGION A','REGION B','REGION F',
                                         'REGION A','REGION B','REGION E','REGION F',
                                         'REGION C','REGION D',
-                                    
+                                        'REGION A','REGION B','REGION C',
+                                        'REGION A','REGION F',
+                                        'REGION D','REGION E','REGION F',
+                                        'REGION B','REGION C',
+                                        'REGION A','REGION B','REGION C','REGION E','REGION F',
+                                        'REGION E',
+                                        'REGION C','REGION D',
                                     ];
             eventPenalities =       [
                                         -15, -15, -15,
                                         -20, -15, -10,
                                         -10, -15, -20, -10,
                                         -20, -20,
+                                        -10, -10, -15,
+                                        -15, -15,
+                                        -10, -10, -10,
+                                        -20, -15,
+                                        -15, -15, -15, -15, -15,
+                                        -10,
+                                        -20, -20,
+                                    
                                     ];
             eventEnvironsRequired = [
                                         0.3, 0.3, 0.2,
                                         0.4, 0.2, 0.1,
                                         0.2, 0.1, 0.3, 0.3,
                                         0.2, 0.3,
+                                        0.3, 0.3, 0.5,
+                                        0.1, 0.1,
+                                        0.2, 0.2, 0.2,
+                                        0.2, 0.2,
+                                        0.3, 0.3, 0.4, 0.5, 0.2,
+                                        0.3,
+                                        0.2, 0.2,
                                     
                                     ];
             eventHeatsRequired =    [
@@ -936,26 +975,56 @@
                                         0.0, 0.0, 0.0,
                                         0.5, 0.7, 0.9, 0.6,
                                         0.0, 0.0,
+                                        0.6, 0.6, 0.7,
+                                        0.0, 0.0,
+                                        0.0, 0.0, 0.0,
+                                        0.0, 0.0,
+                                        0.6, 0.6, 1.0, 1.2, 0.7,
+                                        0.8,
+                                        0.0, 0.0,
                                     
-
                                     ];
             eventColdsRequired =    [
                                         0.0, 0.0, 0.0,
                                         0.8, 0.6, 0.5,
                                         0.0, 0.0, 0.0, 0.0,
                                         0.0, 0.0, 
+                                        0.0, 0.0, 0.0,
+                                        0.8, 0.7,
+                                        0.0, 0.0, 0.0,
+                                        0.0, 0.0,
+                                        0.0, 0.0, 0.0, 0.0, 0.0,
+                                        0.0,
+                                        0.0, 0.0,
+
                                     ];
             eventCoastalsRequired = [
                                         0.7, 0.4, 0.8,
                                         0.0, 0.0, 0.0,
                                         0.0, 0.0, 0.0, 0.0,
-                                        0.0, 0.5
+                                        0.0, 0.5,
+                                        0.0, 0.0, 0.0,
+                                        0.0, 0.4,
+                                        0.5, 0.3, 0.6,
+                                        0.0, 0.6,
+                                        0.0, 0.0, 0.0, 0.0, 0.0,
+                                        0.0,
+                                        0.0, 0.4,
+                                    
                                     ];
             eventFloodsRequired =   [
                                         0.3, 0.3, 0.5,
                                         0.0, 0.0, 0.0,
                                         0.0, 0.0, 0.0, 0.0,
                                         0.8, 1.1,
+                                        0.0, 0.0, 0.0,
+                                        0.3, 0.1,
+                                        0.0, 0.0, 0.0,
+                                        0.7, 0.8,
+                                        0.0, 0.0, 0.0, 0.0, 0.0,
+                                        0.0,
+                                        0.7, 0.9,
+                                   
                                     ];
 
             // 確保所有事件的數量一致
