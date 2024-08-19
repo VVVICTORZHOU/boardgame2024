@@ -334,8 +334,36 @@
             font-size: 18px;
             text-align: center;
             color: #333;
+            border: none;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #888;
         }
 
+        .popup-content .event-attr-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .popup-content .event-region {
+            font-size: 24px;
+            font-family: 'HWYGWDE', Arial, sans-serif;
+            text-align: center;
+            color: #333;
+            padding: 0 20px;
+            margin-top: 10px;
+            margin-right: 20px;
+            border-right: 2px solid #888;
+        }
+
+        .popup-content .event-penality {
+            font-size: 24px;
+            font-family: 'HWYGWDE', Arial, sans-serif;
+            text-align: center;
+            color: #333;
+            margin-top: 10px;
+        }
 
         .popup-content .clear-btn {
             display: flex;
@@ -382,9 +410,9 @@
         }
 
         .event-icons img {
-            width: 50px;
-            height: 50px;
-            margin: 5px;
+            width: 25px;
+            height: 25px;
+            margin: 3px;
         }
 
 
@@ -470,6 +498,13 @@
             color: #ccc;
         }
 
+        .dark-mode .popup-content .event-region {
+            color: #ccc;
+        }
+
+        .dark-mode .popup-content .event-penality {
+            color: #ccc;
+        }
 
         .dark-mode .popup-content .clear-btn button {
             background-color: #333;
@@ -657,14 +692,18 @@
             <span class="close-btn">&times;</span>
             <p class="event-title">EVENTS INFORMATION</p>
             <p class="event-subtitle">This is an example text for the round over popup. You can customize this message as needed.</p>
+            <div class="event-attr-container">
+                <div class="event-region">REGION A</div>
+                <div class="event-penality">$20</div>
+            </div>
             <div class="event-icons-container">
                 <div class="heat-icons event-icons">
+                </div>
+                <div class="environ-icons event-icons">
                 </div>
                 <div class="coastal-icons event-icons">
                 </div>
                 <div class="flood-icons event-icons">
-                </div>
-                <div class="environ-icons event-icons">
                 </div>
                 <div class="cold-icons event-icons">
                 </div>
@@ -839,7 +878,6 @@
         function closeEventPopup() {
             const popup = document.getElementById('event-popup');
             popup.classList.remove('show');
-
             }
 
             // 為關閉按鈕添加事件監聽器
@@ -849,7 +887,7 @@
             window.addEventListener('click', function(event) {
             const popup = document.getElementById('event-popup');
             if (event.target == popup) {
-                closeRoundOverPopup();
+                closeEventPopup();
             }
         });
 
