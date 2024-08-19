@@ -301,6 +301,8 @@
         }
 
         .version-info {
+            display: flex;
+            flex-direction: column;
             margin-top: auto;
             text-align: center;
             font-size: 12px;
@@ -643,6 +645,12 @@
             color: #fff;
         }
 
+        .dark-mode .inspect-map button {
+            color: #fff;
+            background-color: #555;
+            border: 1px solid #555;
+        }
+
         .dark-mode .map-content {
             background-color: #333;
         }
@@ -717,7 +725,7 @@
     <div class="quadrants-container">
         <div class="quadrant">
             <input type="text" class="player-name" value="PLAYER 1">
-            <div class="score">80</div>
+            <div class="score">100</div>
             <div class="buttons">
                 <button onclick="updateScore(this, -10)">-10</button>
                 <button onclick="updateScore(this, -1)">-1</button>
@@ -727,7 +735,7 @@
         </div>
         <div class="quadrant">
             <input type="text" class="player-name" value="PLAYER 2">
-            <div class="score">80</div>
+            <div class="score">100</div>
             <div class="buttons">
                 <button onclick="updateScore(this, -10)">-10</button>
                 <button onclick="updateScore(this, -1)">-1</button>
@@ -737,7 +745,7 @@
         </div>
         <div class="quadrant">
             <input type="text" class="player-name" value="PLAYER 3">
-            <div class="score">80</div>
+            <div class="score">100</div>
             <div class="buttons">
                 <button onclick="updateScore(this, -10)">-10</button>
                 <button onclick="updateScore(this, -1)">-1</button>
@@ -747,7 +755,7 @@
         </div>
         <div class="quadrant" id="last-quadrant">
             <input type="text" class="player-name" value="PLAYER 4">
-            <div class="score">80</div>
+            <div class="score">100</div>
             <div class="buttons">
                 <button onclick="updateScore(this, -10)">-10</button>
                 <button onclick="updateScore(this, -1)">-1</button>
@@ -808,7 +816,7 @@
         </div>
         <div class="init-funds">
             <span>INITIAL FUNDS</span>
-            <input type="number" id="init-funds" value="80">
+            <input type="number" id="init-funds" value="100">
         </div>
         <div class="inspect-map">
             <span>INSPECT MAP</span>
@@ -820,7 +828,8 @@
        
         </div>
         <div class="version-info">
-            Version 1.0.5 | Developed by 周彥廷
+            <span>臺大氣候行動社桌遊「起始‧1.5°C」</span>
+            <span>Version 1.0.6 | Developed by 周彥廷</span>
         </div>
     </div>
     <!-- 事件卡彈窗 -->
