@@ -195,6 +195,21 @@
         .reset button {
             font-size: 16px;
         }
+        .init-funds {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .init-funds input {
+            width: 50px;
+            padding: 5px;
+            font-size: 16px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
 
         .report-issue {
             
@@ -499,6 +514,11 @@
        
         }
 
+        body.dark-mode .init-funds input {
+            background-color: #555;
+            color: #fff;
+        }
+
         body.dark-mode .report-issue button:hover {
             background-color: #2196F3
         }
@@ -628,7 +648,7 @@
     <div class="quadrants-container">
         <div class="quadrant">
             <input type="text" class="player-name" value="PLAYER 1">
-            <div class="score">0</div>
+            <div class="score">50</div>
             <div class="buttons">
                 <button onclick="updateScore(this, -10)">-10</button>
                 <button onclick="updateScore(this, -1)">-1</button>
@@ -638,7 +658,7 @@
         </div>
         <div class="quadrant">
             <input type="text" class="player-name" value="PLAYER 2">
-            <div class="score">0</div>
+            <div class="score">50</div>
             <div class="buttons">
                 <button onclick="updateScore(this, -10)">-10</button>
                 <button onclick="updateScore(this, -1)">-1</button>
@@ -648,7 +668,7 @@
         </div>
         <div class="quadrant">
             <input type="text" class="player-name" value="PLAYER 3">
-            <div class="score">0</div>
+            <div class="score">50</div>
             <div class="buttons">
                 <button onclick="updateScore(this, -10)">-10</button>
                 <button onclick="updateScore(this, -1)">-1</button>
@@ -658,7 +678,7 @@
         </div>
         <div class="quadrant" id="last-quadrant">
             <input type="text" class="player-name" value="PLAYER 4">
-            <div class="score">0</div>
+            <div class="score">50</div>
             <div class="buttons">
                 <button onclick="updateScore(this, -10)">-10</button>
                 <button onclick="updateScore(this, -1)">-1</button>
@@ -716,6 +736,10 @@
         <div class="reset">
             <span>RESET VALUES</span>
             <button onclick="resetAllScores()">RESET</button>
+        </div>
+        <div class="init-funds">
+            <span>INITIAL FUNDS</span>
+            <input type="number" id="init-funds" value="50">
         </div>
         <div class="report-issue">
             <span>REPORT ISSUES</span>
@@ -792,7 +816,13 @@
 
         let currentDegree = parseFloat(document.querySelector('.total-score').textContent);
         function resetAllScores() {
-            document.querySelectorAll('.score').forEach(score => score.textContent = '0');
+            // get the initial funds value
+            const initFunds = document.getElementById('init-funds').value;
+            if (initFunds < 0) {
+                initFunds = 0;
+                console.log('Initial funds cannot be negative. It has been set to 0.');
+            }
+            document.querySelectorAll('.score').forEach(score => score.textContent = initFunds);
             document.querySelectorAll('.score').forEach(score => score.style.color = '');
             document.querySelector('.total-score').textContent = '1.5°C';
             currentDegree = 1.5;
@@ -873,51 +903,59 @@
                                         '海平面上升','海平面上升','海平面上升',
                                         '極地渦旋侵襲','極地渦旋侵襲','極地渦旋侵襲',
                                         '持續性乾旱','持續性乾旱','持續性乾旱','持續性乾旱',
+                                        '超級熱帶風暴','超級熱帶風暴',
                                     ];
             eventSubtitles =        [
                                         'Sea Level Rise','Sea Level Rise','Sea Level Rise',
                                         'Polar Vortex','Polar Vortex','Polar Vortex',
                                         'Persistent Drought','Persistent Drought','Persistent Drought','Persistent Drought',
-                                    
+                                        'Super Tropical Cyclone','Super Tropical Cyclone',
                                     ];
             eventRegions =          [
                                         'REGION D','REGION E','REGION F',
                                         'REGION A','REGION B','REGION F',
                                         'REGION A','REGION B','REGION E','REGION F',
+                                        'REGION C','REGION D',
+                                    
                                     ];
             eventPenalities =       [
                                         -15, -15, -15,
                                         -20, -15, -10,
                                         -10, -15, -20, -10,
+                                        -20, -20,
                                     ];
             eventEnvironsRequired = [
                                         0.3, 0.3, 0.2,
                                         0.4, 0.2, 0.1,
                                         0.2, 0.1, 0.3, 0.3,
+                                        0.2, 0.3,
+                                    
                                     ];
             eventHeatsRequired =    [
-                                        0, 0, 0,
-                                        0, 0, 0,
-                                        0.4, 0.6, 0.8, 0.5,
+                                        0.0, 0.0, 0.0,
+                                        0.0, 0.0, 0.0,
+                                        0.5, 0.7, 0.9, 0.6,
+                                        0.0, 0.0,
                                     
+
                                     ];
             eventColdsRequired =    [
-                                        0, 0, 0,
-                                        0.7, 0.5, 0.4,
-                                        0, 0, 0, 0,
-                                    
+                                        0.0, 0.0, 0.0,
+                                        0.8, 0.6, 0.5,
+                                        0.0, 0.0, 0.0, 0.0,
+                                        0.0, 0.0, 
                                     ];
             eventCoastalsRequired = [
-                                        0.9, 0.6, 1,
-                                        0, 0, 0,
-                                        0, 0, 0, 0,
-                                    
+                                        0.7, 0.4, 0.8,
+                                        0.0, 0.0, 0.0,
+                                        0.0, 0.0, 0.0, 0.0,
+                                        0.0, 0.5
                                     ];
             eventFloodsRequired =   [
                                         0.3, 0.3, 0.5,
-                                        0, 0, 0,
-                                        0, 0, 0, 0,
-                                   
+                                        0.0, 0.0, 0.0,
+                                        0.0, 0.0, 0.0, 0.0,
+                                        0.8, 1.1,
                                     ];
 
             // 確保所有事件的數量一致
@@ -969,6 +1007,11 @@
             // if those values are zero, set penality to zero
             if (environIconAmount + heatIconAmount + coldIconAmount + coastalIconAmount + floodIconAmount == 0) {
                 popup.querySelector('.event-penality').textContent = '$0';
+                // hide the penality buttons
+                popup.querySelector('.penalty-btn-container').style.display = 'none';
+            } else {
+                // show the penality buttons
+                popup.querySelector('.penalty-btn-container').style.display = 'flex';
             }
             
             // 添加若干個.png圖標
