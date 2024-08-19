@@ -650,7 +650,7 @@
     <div class="quadrants-container">
         <div class="quadrant">
             <input type="text" class="player-name" value="PLAYER 1">
-            <div class="score">50</div>
+            <div class="score">60</div>
             <div class="buttons">
                 <button onclick="updateScore(this, -10)">-10</button>
                 <button onclick="updateScore(this, -1)">-1</button>
@@ -660,7 +660,7 @@
         </div>
         <div class="quadrant">
             <input type="text" class="player-name" value="PLAYER 2">
-            <div class="score">50</div>
+            <div class="score">60</div>
             <div class="buttons">
                 <button onclick="updateScore(this, -10)">-10</button>
                 <button onclick="updateScore(this, -1)">-1</button>
@@ -670,7 +670,7 @@
         </div>
         <div class="quadrant">
             <input type="text" class="player-name" value="PLAYER 3">
-            <div class="score">50</div>
+            <div class="score">60</div>
             <div class="buttons">
                 <button onclick="updateScore(this, -10)">-10</button>
                 <button onclick="updateScore(this, -1)">-1</button>
@@ -680,7 +680,7 @@
         </div>
         <div class="quadrant" id="last-quadrant">
             <input type="text" class="player-name" value="PLAYER 4">
-            <div class="score">50</div>
+            <div class="score">60</div>
             <div class="buttons">
                 <button onclick="updateScore(this, -10)">-10</button>
                 <button onclick="updateScore(this, -1)">-1</button>
@@ -741,7 +741,7 @@
         </div>
         <div class="init-funds">
             <span>INITIAL FUNDS</span>
-            <input type="number" id="init-funds" value="50">
+            <input type="number" id="init-funds" value="60">
         </div>
         <div class="report-issue">
             <span>REPORT ISSUES</span>
@@ -1040,7 +1040,7 @@
             popup.querySelector('.event-title').textContent = eventTitles[randomIndex];
             popup.querySelector('.event-subtitle').textContent = eventSubtitles[randomIndex];
             popup.querySelector('.event-region').textContent = eventRegions[randomIndex];
-            popup.querySelector('.event-penality').textContent = '$' + eventPenalities[randomIndex];
+            popup.querySelector('.event-penality').textContent = '$' + Math.floor((eventPenalities[randomIndex] * warmingDegree/3));
 
             // 獲取彈窗中的元素
             const environIconContainer = popup.querySelector('.environ-icons');
