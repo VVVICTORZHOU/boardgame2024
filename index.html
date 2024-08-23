@@ -1003,7 +1003,6 @@
                                         '梅雨鋒面極端暴雨','梅雨鋒面極端暴雨',
                                         '綠色減緩投資獎勵金',
                                         '能源轉型發展促進金',
-                                        '大型地震發生',
 
                                     ];
             eventSubtitles =        [
@@ -1020,7 +1019,6 @@
                                         'Extreme Rainfall in Mei-Yu Front','Extreme Rainfall in Mei-Yu Front',
                                         'Green Investment Incentive',
                                         'Energy Transition Incentive',
-                                        'Severe Earthquake Event',
                                    
                                     ];
             eventRegions =          [
@@ -1037,7 +1035,6 @@
                                         'REGION C','REGION D',
                                         '場上具有最多碳徽章的玩家可獲得額外獎勵，若同分則無',
                                         '玩家本身可獲得額外獎勵，建議用於投資先進綠色能源',
-                                        'REGION D',
                                     
                                     ];
             eventPenalities =       [
@@ -1054,7 +1051,6 @@
                                         -20, -20,
                                         30,
                                         30,
-                                        -8,
                                     
                                     
                                     ];
@@ -1070,7 +1066,6 @@
                                         0.3, 0.3, 0.4, 0.5, 0.2,
                                         0.3,
                                         0.2, 0.2,
-                                        0.0,
                                         0.0,
                                         0.0,
                                     
@@ -1090,7 +1085,6 @@
                                         0.0, 0.0,
                                         0.0,
                                         0.0,
-                                        0.0,
                                     
                                     
                                     ];
@@ -1106,7 +1100,6 @@
                                         0.0, 0.0, 0.0, 0.0, 0.0,
                                         0.0,
                                         0.0, 0.0,
-                                        0.0,
                                         0.0,
                                         0.0,
                                     
@@ -1127,7 +1120,6 @@
                                         0.0, 0.4,
                                         0.0,
                                         0.0,
-                                        0.0,
                                     
                                     
                                     
@@ -1144,7 +1136,6 @@
                                         0.0, 0.0, 0.0, 0.0, 0.0,
                                         0.0,
                                         0.7, 0.9,
-                                        0.0,
                                         0.0,
                                         0.0,
                                     ];
@@ -1202,13 +1193,10 @@
                     popup.querySelector('.event-penality').textContent = '$' + Math.floor((eventPenalities[randomIndex]));
                 }
                 else {
-                    if (eventPenalities[randomIndex] < 0) {
-                        popup.querySelector('.event-penality').textContent = '$' + Math.floor((eventPenalities[randomIndex]));
-                    } else {
-                        popup.querySelector('.event-penality').textContent = '$0';
-                        // hide the penality buttons
-                        popup.querySelector('.penalty-btn-container').style.display = 'none';
-                    }
+                    popup.querySelector('.event-penality').textContent = '$0';
+                    // hide the penality buttons
+                    popup.querySelector('.penalty-btn-container').style.display = 'none';
+                    
                 }
             
             } else {
