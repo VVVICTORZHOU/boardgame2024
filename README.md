@@ -1,2 +1,4 @@
 # boardgame2024
 台大氣候行動社桌遊「起始．1.5ºC」
+
+PLEASE REFER TO [PDF](https://github.com/VVVICTORZHOU/boardgame2024/blob/main/%E7%A4%BE%E5%9C%98%E6%9C%83%E8%AD%B0%E6%A1%8C%E9%81%8A%E4%BB%8B%E7%B4%B9.pdf) FOR MORE DETAILS AND INSTRUCTION.
