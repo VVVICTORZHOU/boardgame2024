@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戲記分板</title>
+    <style>
+        @font-face {
+            font-family: 'HWYGWDE';
+            src: url('HWYGWDE.TTF') format('truetype');
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .warming-degree-container {
+            width: 100%;
+            background-color: #334399;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .warming-degree-title {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 5px;
+            font-family: 'HWYGWDE', Arial, sans-serif;
+        }
+        .warming-degree-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }        
+
+        .chart-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: 0;
+            pointer-events: none; /* 讓點擊穿透不影響操作 */
+            opacity: 0.25;
+        }
+        .warming-degree-title {
+            position: relative;
+            z-index: 1;
+        }
+
+        .warming-degree-score-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .score-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Adjust this value to control the space between the elements */
+        }
+
+        .total-score {
+            font-family: 'HWYGWDE', Arial, sans-serif;
+            font-size: 80px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        .score-wrapper #carbonfootprint-display {
+            font-family: 'HWYGWDE', Arial, sans-serif;
+            font-size: 30px;
+            color: #888;
+        }
+
+        .icon-button {
+            width: 60px; /* Adjust this value to change the size of the icons */
+            height: auto;
+            cursor: pointer;
+            margin: 5px;
+            padding: 5px;
+            border: none;
+            background: none;
+        }
+
+        .icon-button:hover {
+            opacity: 0.8;
+        }
+
+        .quadrants-container {
+            display: flex;
+            flex-wrap: wrap;
+            flex-grow: 1;
+        }
+        .quadrant {
+            width: 50%;
+            height: 50%;
+            box-sizing: border-box;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        .quadrant:nth-child(odd) {
+            background-color: #f0f0f0;
+        }
+        .quadrant:nth-child(even) {
+            background-color: #e0e0e0;
+        }
+
+        .quadrant-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px;
+            gap: 30px;
+        }
+
+        .quadrant-content {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            gap: 40px;
+        }
+
+        .score-buttons-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .player-name {
+            font-size: 28px;
+            font-family: 'consolas', monospace;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            color: #333;
+            text-align: center;
+            background-color: transparent;
+            border: none;
+            border-bottom: 2px solid #333;
+        }
+        .score {
+            font-family: 'HWYGWDE', Arial, sans-serif;
+            font-size: 100px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            font-size: 20px;
+            font-family: 'consolas', monospace;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #333;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .energy-emission-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .energy-container, .emission-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .energy-score, .emission-score {
+            font-size: 40px;
+            font-family: 'HWYGWDE', Arial, sans-serif;
+            font-weight: bold;
+            color: #182;
+        }
+        
+        #settings-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        #settings-panel {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100vh;
+            background-color: #fff;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+            transition: right 0.3s;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #settings-panel.open {
+            right: 0;
+        }
+
+        #settings-panel h2 {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border: none;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #888;
+        }
+
+        .switch {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .reset {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .reset button {
+            font-size: 16px;
+        }
+        .init-funds {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .init-funds input {
+            width: 50px;
+            padding: 5px;
+            font-size: 16px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+
+        .report-issue {
+            
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .report-issue button {
+            font-size: 16px;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        #close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .theme {
+            flex-direction: row;
+            margin-bottom: 20px;
+        }
+        .color-options {
+            display: flex;
+            gap: 10px;
+        }
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #dev-console {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4em;
+            background-color: #222;
+            color: white;
+            font-family: monospace;
+            overflow-y: auto;
+            z-index: 1000;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        #dev-console.hidden {
+            display: none;
+        }
+
+        #dev-console-output {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .version-info {
+            display: flex;
+            flex-direction: column;
+            margin-top: auto;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .popup-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .popup-container.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-content {
+            background-color: #f1f1f1;
+            margin: 5px auto;
+            padding: 20px;
+            width: 80%;
+            position: relative;
+            top: -100%;
+            border-radius: 5px;
+            transition: top 0.3s ease;
+        }
+
+        .popup-container.show .popup-content {
+            top: 0;
+        }
+
+        .popup-content .event-title {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            color: #111;
+            margin-bottom: 5px;
+        }
+
+        .popup-content .event-subtitle {
+            font-size: 18px;
+            text-align: center;
+            color: #333;
+            border: none;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #888;
+            margin-top: 5px;
+        }
+
+        .popup-content .event-attr-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .popup-content .event-region {
+            font-size: 24px;
+            font-family: 'HWYGWDE', Arial, sans-serif;
+            text-align: center;
+            color: #333;
+            padding: 0 20px;
+            margin-top: 10px;
+            margin-right: 20px;
+            border-right: 2px solid #888;
+        }
+
+        .popup-content .event-penality {
+            font-size: 24px;
+            font-family: 'HWYGWDE', Arial, sans-serif;
+            text-align: center;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .popup-container .penalty-btn-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .popup-container .penality-btn {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .popup-container .penality-btn button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            color: #333;
+        }
+
+        .popup-container .penality-btn button:hover {
+            background-color: #e0e0e0;
+            color: #333
+        }
+
+        .popup-content .clear-btn {
+            display: flex;
+            justify-content: center;
+        }
+
+        .popup-content .clear-btn button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            color: #333;
+        }
+
+        .popup-content .clear-btn button:hover {
+            background-color: #e0e0e0;
+            color: #333
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .event-icons-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            flex-direction: row;
+        }
+
+        .event-icons img {
+            width: 25px;
+            height: 25px;
+            margin: 3px;
+        }
+        .inspect-map {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .inspect-map button {
+            font-size: 16px;
+        }
+        #map-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #map-popup.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .map-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+            width: 80%;
+            max-width: 1000px;
+            transition: transform 0.3s ease;
+            transform: scale(0.7);
+        }
+
+        #map-popup.show .map-content {
+            transform: scale(1);
+        }
+
+        .map-content .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .game-map {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #222;
+            color: #fff;
+        }
+        body.dark-mode .quadrant:nth-child(odd) {
+            background-color: #333;
+        }
+        body.dark-mode .quadrant:nth-child(even) {
+            background-color: #444;
+        }
+        body.dark-mode #settings-panel {
+            background-color: #333;
+            color: #fff;
+        }
+        body.dark-mode .settings-panel h2 {
+            border-bottom: 2px solid #fff;
+        }
+       
+
+        body.dark-mode .player-name {
+            color: #fff;
+            border-bottom-color: #eee;
+        }
+
+        body.dark-mode .buttons button {
+            color: #fff;
+            background-color: #555;
+            border: 1px solid #555;
+        }
+
+        body.dark-mode .energy-buttons button {
+            color: #fff;
+            background-color: #555;
+            border: 1px solid #555;
+        }
+
+        body.dark-mode .emission-buttons button {
+            color: #fff;
+            background-color: #555;
+            border: 1px solid #555;
+        }
+
+        body.dark-mode .reset button {
+            color: #fff;
+            background-color: #555;
+            border: 1px solid #555;
+        }
+
+        body.dark-mode .report-issue button {
+            color: #fff;
+            background-color: #555;
+            border: 1px solid #555;
+        }
+
+        body.dark-mode .buttons button:hover {
+            background-color: #666;
+        }
+
+        body.dark-mode .energy-buttons button:hover {
+            background-color: #666;
+        }
+
+        body.dark-mode .emission-buttons button:hover {
+            background-color: #666;
+        }
+
+        body.dark-mode .reset button:hover {
+            background-color: #2196F3;
+       
+        }
+
+        body.dark-mode .init-funds input {
+            background-color: #555;
+            color: #fff;
+        }
+
+        body.dark-mode .report-issue button:hover {
+            background-color: #2196F3
+        }
+
+        body.dark-mode .slider {
+            background-color: #888;
+        }
+
+        body.dark-mode input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        body.dark-mode #close-btn {
+            color: #fff;
+        }
+        
+        .dark-mode .popup-content {
+            background-color: #222;
+            color: #fff;
+        }
+
+        .dark-mode .popup-content .event-title {
+            color: #fff;
+        }
+
+        .dark-mode .popup-content .event-subtitle {
+            color: #ccc;
+        }
+
+        .dark-mode .popup-content .event-region {
+            color: #ccc;
+        }
+
+        .dark-mode .popup-content .event-penality {
+            color: #ccc;
+        }
+
+        .dark-mode .popup-content .penality-btn button {
+            background-color: #555;
+            border: 1px solid #555;
+            color: #fff;
+        }
+
+        .dark-mode .popup-content .penality-btn button:hover {
+            background-color: #2196F3;
+        }
+
+        .dark-mode .popup-content .clear-btn button {
+            background-color: #333;
+            border: 1px solid #333;
+            color: #fff;
+        }
+    
+        .dark-mode .popup-content .clear-btn button:hover {
+            background-color: #2196F3;
+        }
+
+
+        .dark-mode .close-btn:hover,
+        .dark-mode .close-btn:focus {
+            color: #fff;
+        }
+
+        .dark-mode .inspect-map button {
+            color: #fff;
+            background-color: #555;
+            border: 1px solid #555;
+        }
+
+        .dark-mode .map-content {
+            background-color: #333;
+        }
+
+        .dark-mode .map-content .close-btn {
+            color: #fff;
+        }
+        
+        /* Mobile styles */
+        @media (max-width: 768px) {
+
+            .quadrants-container {
+                flex-direction: column;
+                height: auto;
+            }
+            .quadrant {
+                width: 100%;
+                height: auto;
+                padding: 15px;
+            }
+
+            #last-quadrant {
+                margin-bottom: 3em;
+            }
+
+            .energy-container, .emission-container {
+                gap: 2px;
+            }
+
+            .energy-score, .emission-score {
+                font-size: 30px;
+            }
+
+            .player-name {
+                font-size: 20px;
+            }
+            .score {
+                font-size: 60px;
+                margin: 15px 0;
+            }
+            .buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            button {
+                font-size: 14px;
+                padding: 8px 15px;
+                margin: 5px;
+            }
+            #settings-panel {
+                width: 100%;
+                right: -100%;
+            }
+            #settings-panel.open {
+                right: 0;
+            }
+        }
+    
+
+    </style>
+</head>
+<body>
+    <!-- 上方全局升溫幅度 -->
+    <div class="warming-degree-container">
+        <canvas id="warmingChart" class="chart-bg"></canvas>
+        <div class="warming-degree-title">WARMING DEGREE</div>
+        <div class="score-wrapper">
+            <div class="total-score">1.5°C</div>
+            <div id="carbonfootprint-display" style="display: none;">0</div>
+        </div>
+    </div>
+    <!-- 四個玩家的計分區 -->
+    <div class="quadrants-container">
+        <div class="quadrant">
+            <div class="quadrant-header">
+                <input type="text" class="player-name" value="PLAYER 1">
+                <img src="RoundOver.png" alt="+1.0" class="icon-button" onclick="submitIndividual(this)">
+            </div>
+            <div class="quadrant-content">
+                <div class="score-buttons-container">
+                    <div class="score">200</div>
+                    <div class="buttons">
+                        <button onclick="updateScore(this, -10)">-10</button>
+                        <button onclick="updateScore(this, -1)">-1</button>
+                        <button onclick="updateScore(this, 1)">+1</button>
+                        <button onclick="updateScore(this, 10)">+10</button>
+                    </div>
+                </div>
+                <div class="energy-emission-container">
+                    <div class="energy-container">
+                        <img src="EnergyLight.png" alt="+1.0" class="icon-button" onclick="">
+                        <div class="energy-score">5</div>
+                        <div class="energy-buttons">
+                            <button onclick="updateEnergyScore(this, -1)">-</button>
+                            <button onclick="updateEnergyScore(this, 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="emission-container">
+                        <img src="CarbonFootprint.png" alt="+1.0" class="icon-button" onclick="">
+                        <div class="emission-score">0</div>
+                        <div class="emission-buttons">
+                            <button onclick="updateEmissionScore(this, -1)">-</button>
+                            <button onclick="updateEmissionScore(this, 1)">+</button>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+        <div class="quadrant">
+            <div class="quadrant-header">
+                <input type="text" class="player-name" value="PLAYER 2">
+                <img src="RoundOver.png" alt="+1.0" class="icon-button" onclick="submitIndividual(this)">
+            </div>
+            <div class="quadrant-content">
+                <div class="score-buttons-container">
+                    <div class="score">200</div>
+                    <div class="buttons">
+                        <button onclick="updateScore(this, -10)">-10</button>
+                        <button onclick="updateScore(this, -1)">-1</button>
+                        <button onclick="updateScore(this, 1)">+1</button>
+                        <button onclick="updateScore(this, 10)">+10</button>
+                    </div>
+                </div>
+                <div class="energy-emission-container">
+                    <div class="energy-container">
+                        <img src="EnergyLight.png" alt="+1.0" class="icon-button" onclick="">
+                        <div class="energy-score">5</div>
+                        <div class="energy-buttons">
+                            <button onclick="updateEnergyScore(this, -1)">-</button>
+                            <button onclick="updateEnergyScore(this, 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="emission-container">
+                        <img src="CarbonFootprint.png" alt="+1.0" class="icon-button" onclick="">
+                        <div class="emission-score">0</div>
+                        <div class="emission-buttons">
+                            <button onclick="updateEmissionScore(this, -1)">-</button>
+                            <button onclick="updateEmissionScore(this, 1)">+</button>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+        <div class="quadrant">
+            <div class="quadrant-header">
+                <input type="text" class="player-name" value="PLAYER 3">
+                <img src="RoundOver.png" alt="+1.0" class="icon-button" onclick="submitIndividual(this)">
+            </div>
+            <div class="quadrant-content">
+                <div class="score-buttons-container">
+                    <div class="score">200</div>
+                    <div class="buttons">
+                        <button onclick="updateScore(this, -10)">-10</button>
+                        <button onclick="updateScore(this, -1)">-1</button>
+                        <button onclick="updateScore(this, 1)">+1</button>
+                        <button onclick="updateScore(this, 10)">+10</button>
+                    </div>
+                </div>
+                <div class="energy-emission-container">
+                    <div class="energy-container">
+                        <img src="EnergyLight.png" alt="+1.0" class="icon-button" onclick="">
+                        <div class="energy-score">5</div>
+                        <div class="energy-buttons">
+                            <button onclick="updateEnergyScore(this, -1)">-</button>
+                            <button onclick="updateEnergyScore(this, 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="emission-container">
+                        <img src="CarbonFootprint.png" alt="+1.0" class="icon-button" onclick="">
+                        <div class="emission-score">0</div>
+                        <div class="emission-buttons">
+                            <button onclick="updateEmissionScore(this, -1)">-</button>
+                            <button onclick="updateEmissionScore(this, 1)">+</button>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+        <div class="quadrant" id="last-quadrant">
+            <div class="quadrant-header">
+                <input type="text" class="player-name" value="PLAYER 4">
+                <img src="RoundOver.png" alt="+1.0" class="icon-button" onclick="submitIndividual(this)">
+            </div>
+            <div class="quadrant-content">
+                <div class="score-buttons-container">
+                    <div class="score">200</div>
+                    <div class="buttons">
+                        <button onclick="updateScore(this, -10)">-10</button>
+                        <button onclick="updateScore(this, -1)">-1</button>
+                        <button onclick="updateScore(this, 1)">+1</button>
+                        <button onclick="updateScore(this, 10)">+10</button>
+                    </div>
+                </div>
+                <div class="energy-emission-container">
+                    <div class="energy-container">
+                        <img src="EnergyLight.png" alt="+1.0" class="icon-button" onclick="">
+                        <div class="energy-score">5</div>
+                        <div class="energy-buttons">
+                            <button onclick="updateEnergyScore(this, -1)">-</button>
+                            <button onclick="updateEnergyScore(this, 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="emission-container">
+                        <img src="CarbonFootprint.png" alt="+1.0" class="icon-button" onclick="">
+                        <div class="emission-score">0</div>
+                        <div class="emission-buttons">
+                            <button onclick="updateEmissionScore(this, -1)">-</button>
+                            <button onclick="updateEmissionScore(this, 1)">+</button>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+        <div id="dev-console" class="hidden">
+            <pre id="dev-console-output"></pre>
+        </div>
+    </div>
+    <!-- 設置彈窗 -->
+    <button id="settings-btn" onclick="toggleSettings()">⚙️</button>
+    <div id="settings-panel">
+        <button id="close-btn" onclick="toggleSettings()">✖</button>
+        <h2>SETTINGS</h2>
+        <div class="theme">
+            <span>THEME</span>
+            <div class="color-options">
+                <div class="color-option" style="background-color: #334399;" onclick="changeTheme('#334399')"></div>
+                <div class="color-option" style="background-color: #993333;" onclick="changeTheme('#993333')"></div>
+                <div class="color-option" style="background-color: #3a633a;" onclick="changeTheme('#3a633a')"></div>
+                <div class="color-option" style="background-color: #999933;" onclick="changeTheme('#999933')"></div>
+                <div class="color-option" style="background-color: #6c5296;" onclick="changeTheme('#6c5296')"></div>
+            </div>
+        </div>
+        <div class="switch">
+            <span>DARK MODE</span>
+            <label class="toggle">
+                <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="switch">
+            <span>SHOW CFP</span>
+            <label class="toggle">
+                <input type="checkbox" id="show-cfp-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="switch">
+            <span>REALISTIC</span>
+            <label class="toggle">
+                <input type="checkbox" id="difficulty-toggle" onchange="toggleDifficulty()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="switch">
+            <span>DEV MODE</span>
+            <label class="toggle">
+                <input type="checkbox" id="dev-mode-toggle" onchange="toggleDevMode()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="reset">
+            <span>RESET VALUES</span>
+            <button onclick="resetAllScores()">RESET</button>
+        </div>
+        <div class="init-funds">
+            <span>INITIAL FUNDS</span>
+            <input type="number" id="init-funds" value="200">
+        </div>
+        <div class="inspect-map">
+            <span>INSPECT MAP</span>
+            <button onclick="document.getElementById('map-popup').classList.add('show')">OPEN</button>
+        </div>
+        <div class="report-issue">
+            <span>REPORT ISSUES</span>
+            <a href="https://github.com/VVVICTORZHOU/boardgame2024/issues" target="_blank"><button>REPORT</button></a>
+       
+        </div>
+        <div class="version-info">
+            <a href="https://github.com/VVVICTORZHOU/boardgame2024" target="_blank">臺大氣候行動社桌遊「起始‧1.5°C」</a>
+            <span>Version 1.0.8 | Developed by 周彥廷</span>
+        </div>
+    </div>
+    <!-- 事件卡彈窗 -->
+    <div id="event-popup" class="popup-container" style="display: block;">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <p class="event-title">EVENTS INFORMATION</p>
+            <p class="event-subtitle">This is an example text for the round over popup. You can customize this message as needed.</p>
+            <div class="event-attr-container">
+                <div class="event-region">REGION A</div>
+                <div class="event-penality">$20</div>
+            </div>
+            <div class="event-icons-container">
+                <div class="heat-icons event-icons">
+                </div>
+                <div class="environ-icons event-icons">
+                </div>
+                <div class="coastal-icons event-icons">
+                </div>
+                <div class="flood-icons event-icons">
+                </div>
+                <div class="cold-icons event-icons">
+                </div>
+            </div>
+            <div class="penalty-btn-container">
+                <div class="penality-btn">
+                    <button onclick="closeEventPopupWithPenalty(1)">USERNAME1</button>
+                    <button onclick="closeEventPopupWithPenalty(2)">USERNAME2</button>
+                    <button onclick="closeEventPopupWithPenalty(3)">USERNAME3</button>
+                    <button onclick="closeEventPopupWithPenalty(4)">USERNAME4</button>
+                </div>
+            </div>
+            <div class="clear-btn">
+                <button onclick="closeEventPopup()">CLEAR</button>
+            </div>
+        </div>
+    </div>
+    <div id="map-popup" class="popup-container">
+        <div class="map-content">
+            <span class="close-btn">&times;</span>
+            <img src="GameMap.png" alt="Game Map" class="game-map">
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Initialize the chart
+        const warmingData = [1.5];
+        const warmingChartCtx = document.getElementById('warmingChart').getContext('2d');
+
+        let warmingChart = new Chart(warmingChartCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Warming Degree',
+                    data: [],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    fill: true,
+                    tension: 0.4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Steps',
+                            color: 'rgba(250, 250, 250, 0.5)'
+
+                        },
+                        grid: {
+                            color: 'rgba(250, 250, 250, 0.5)'
+                        },
+                        ticks: {
+                            color: 'rgba(250, 250, 250, 0.5)',
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Temperature (°C)',
+                            color: 'rgba(250, 250, 250, 0.5)'
+                        },
+                        grid: {
+                            color: function(context) {
+                                // context.tick.value 是目前這條 grid 對應的刻度值
+                                if (typeof context.tick.value === 'number' && context.tick.value.toFixed(1) === '2.0') {
+                                    return 'rgba(250, 250, 250, 0.8)'; // 特別標成半透明紅色
+                                }
+                                return 'rgba(250, 250, 250, 0.5)'; // 其他 grid 淡淡灰色
+                            },
+                            lineWidth: function(context) {
+                                if (typeof context.tick.value === 'number' && context.tick.value.toFixed(1) === '2.0') {
+                                    return 2; // 加粗 2.0 度的那條線
+                                }
+                                return 1;
+                            }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                // 確保是數字後四捨五入到小數點第2位
+                                if (typeof value === 'number') {
+                                    return value.toFixed(2) + '°C';
+                                }
+                                return value;
+                            },
+
+                            color: 'rgba(250, 250, 250, 0.5)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Miscellaneous functions
+        function updateScore(button, value) {
+            const quadrant = button.closest('.quadrant');
+            const scoreElement = quadrant.querySelector('.score');
+            let score = parseInt(scoreElement.textContent);
+            score += value;
+            scoreElement.textContent = score;
+            if (score < 0) {
+                scoreElement.style.color = '#b12';
+            } else {
+                scoreElement.style.color = '';
+            }
+        }
+
+        function updateEnergyScore(button, value) {
+            const quadrant = button.closest('.quadrant');
+            const energyScoreElement = quadrant.querySelector('.energy-score');
+            let score = parseInt(energyScoreElement.textContent);
+            score += value;
+            energyScoreElement.textContent = score;
+            if (score < 0) {
+                energyScoreElement.style.color = '#b12';
+            } else {
+                energyScoreElement.style.color = '#182';
+            }
+        }
+
+        function updateEmissionScore(button, value) {
+            const quadrant = button.closest('.quadrant');
+            const emissionScoreElement = quadrant.querySelector('.emission-score');
+            let score = parseInt(emissionScoreElement.textContent);
+            score += value;
+            emissionScoreElement.textContent = score;
+            if (score < 0) {
+                emissionScoreElement.style.color = '#b12';
+            } else {
+                emissionScoreElement.style.color = '#182';
+            }
+        }
+
+        function updateWarmingDegree(value) {
+            const WarmingDegreeElement = document.querySelector('.total-score');
+            let currentScore = parseFloat(WarmingDegreeElement.textContent);
+            currentScore += value;
+            WarmingDegreeElement.textContent = currentScore.toFixed(1) + '°C';
+        }
+
+        function resetScore(button) {
+            const quadrant = button.closest('.quadrant');
+            const scoreElement = quadrant.querySelector('.score');
+            scoreElement.textContent = '0';
+        }
+
+        let currentDegree = parseFloat(document.querySelector('.total-score').textContent);
+        function resetAllScores() {
+            // get the initial funds value
+            const initFunds = document.getElementById('init-funds').value;
+            if (initFunds < 0) {
+                initFunds = 0;
+                console.log('Initial funds cannot be negative. It has been set to 0.');
+            }
+            document.querySelectorAll('.score').forEach(score => score.textContent = initFunds);
+            document.querySelectorAll('.score').forEach(score => score.style.color = '');
+            document.querySelectorAll('.energy-score').forEach(score => score.textContent = '5');
+            document.querySelectorAll('.energy-score').forEach(score => score.style.color = '#182');
+            document.querySelectorAll('.emission-score').forEach(score => score.textContent = '0');
+            document.querySelectorAll('.emission-score').forEach(score => score.style.color = '#182');
+            document.querySelector('.total-score').textContent = '1.5°C';
+            currentDegree = 1.5;
+            console.log('All scores have been reset.');
+
+            warmingData.length = 0; // Clear the array
+            warmingData.push(currentDegree); // Add the initial value back
+
+            // clear the chart data
+            warmingChart.data.labels = [];
+            warmingChart.data.datasets[0].data = [];
+            warmingChart.update();
+        
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settings-panel');
+            panel.classList.toggle('open');
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const mapPopup = document.getElementById('map-popup');
+            mapPopup.classList.toggle('dark-mode');
+        }
+
+        function changeTheme(color) {
+            document.querySelector('.warming-degree-container').style.backgroundColor = color;
+            // also change the color of input:checked + .slider
+            //document.querySelectorAll('input:checked + .slider').forEach(slider => slider.style.backgroundColor = color);
+        }
+
+        let carbonfootprint = 0;
+
+        //function updatecarbonfootprint(value) {
+        //    carbonfootprint += value;
+        //    document.getElementById('carbonfootprint-display').textContent = carbonfootprint;
+        //}
+
+        let isHardMode = false;
+
+        function toggleDifficulty() {
+        isHardMode = !isHardMode;
+        document.querySelector('.switch:nth-child(3) .slider').classList.toggle('active');
+        }
+
+        function submitIndividual(button) {
+            const quadrant = button.closest('.quadrant');
+            const scoreElement = quadrant.querySelector('.score');
+            const energyScoreElement = quadrant.querySelector('.energy-score');
+            const emissionScoreElement = quadrant.querySelector('.emission-score');
+            let energyScore = parseInt(energyScoreElement.textContent);
+            let emissionScore = parseInt(emissionScoreElement.textContent);
+            let score = parseInt(scoreElement.textContent);
+            if (score < 0) {
+                scoreElement.style.color = '#b12';
+            } else {
+                scoreElement.style.color = '';
+            }
+            // Get the current warming degree    
+            let warmingRateCoef_A = 0;
+            let warmingRateCoef_B = 0;
+            let warmingRateCoef_C = 0;
+            // Adjust warming rate based on difficulty:
+            if (isHardMode) {
+                warmingRateCoef_A = 0.03;
+                warmingRateCoef_B = 0.001;
+                warmingRateCoef_C = 0.0002;
+            } else {
+                warmingRateCoef_A = 0.02;
+                warmingRateCoef_B = 0.002;
+                warmingRateCoef_C = 0.0005;
+            }
+            // modulate the Score based on the energy score
+            score = score + energyScore;
+            scoreElement.textContent = score;
+
+            // set the carbon footprint value based on the emission score
+            if (emissionScore < 0) { // high carbon emission
+                carbonfootprint = emissionScore;
+            } else { // low carbon emission
+                carbonfootprint = emissionScore;
+            }
+            // calculate the new warming degree based on the carbon footprint value
+            if (carbonfootprint < 0) { // high carbon emission
+                warmingDegree = currentDegree + currentDegree * warmingRateCoef_A - carbonfootprint * warmingRateCoef_B + carbonfootprint * carbonfootprint * warmingRateCoef_C;
+            } else { // low carbon emission
+                if (currentDegree * warmingRateCoef_A - 2 * carbonfootprint * warmingRateCoef_B - carbonfootprint * carbonfootprint * warmingRateCoef_C < 0) {
+                    warmingDegree = currentDegree + 0.25 * currentDegree * warmingRateCoef_A - 0.5 * carbonfootprint * warmingRateCoef_B - 0.3 * carbonfootprint * carbonfootprint * warmingRateCoef_C;
+                }
+                else {
+                    warmingDegree = currentDegree + currentDegree * warmingRateCoef_A - 2 * carbonfootprint * warmingRateCoef_B - carbonfootprint * carbonfootprint * warmingRateCoef_C;
+                }
+                
+            }
+
+            // if it is cooling
+            if (warmingDegree < -0.1) {
+                warmingDegree = 0;
+            }
+            
+            // output the new warming degree on the terminal
+            addDegree = (warmingDegree - currentDegree)
+            
+            console.log('Last degree: ' + currentDegree + '°C'+', CFP value: ' + carbonfootprint + ', Last adjustment: ' + addDegree + '°C');
+            
+            // round the new warming degree to 3 decimal place
+            currentDegree = (Math.round(warmingDegree * 10000) / 10000)
+            updateWarmingDegree(warmingDegree);
+
+            warmingData.push(currentDegree);
+
+            warmingChart.data.labels = warmingData.map((_, i) => i + 1);
+            warmingChart.data.datasets[0].data = warmingData;
+            warmingChart.update();
+
+            showEventPopup();
+            
+        }
+
+        function submitAndReset() {
+            // Get the current warming degree    
+            let warmingRateCoef_A = 0;
+            let warmingRateCoef_B = 0;
+            let warmingRateCoef_C = 0;
+            // Adjust warming rate based on difficulty:
+            if (isHardMode) {
+                warmingRateCoef_A = 0.03;
+                warmingRateCoef_B = 0.001;
+                warmingRateCoef_C = 0.0002;
+            } else {
+                warmingRateCoef_A = 0.02;
+                warmingRateCoef_B = 0.002;
+                warmingRateCoef_C = 0.0005;
+            }
+
+            if (carbonfootprint < 0) { // high carbon emission
+                warmingDegree = currentDegree + currentDegree * warmingRateCoef_A - carbonfootprint * warmingRateCoef_B + carbonfootprint * carbonfootprint * warmingRateCoef_C;
+            } else { // low carbon emission
+                warmingDegree = currentDegree + currentDegree * warmingRateCoef_A - carbonfootprint * warmingRateCoef_B - carbonfootprint * carbonfootprint * warmingRateCoef_C;
+            }
+            
+            // output the new warming degree on the terminal
+            addDegree = (warmingDegree - currentDegree)
+            
+            console.log('Last degree: ' + currentDegree + '°C'+', CFP value: ' + carbonfootprint + ', Last adjustment: ' + addDegree + '°C');
+            
+            // round the new warming degree to 3 decimal place
+            currentDegree = (Math.round(warmingDegree * 10000) / 10000)
+            updateWarmingDegree(warmingDegree);
+            
+            carbonfootprint = 0;
+            document.getElementById('carbonfootprint-display').textContent = carbonfootprint;
+
+            showEventPopup();
+        }
+        function showEventPopup() {
+            const popup = document.getElementById('event-popup');
+
+            // 定義所有事件
+            eventTitles =           [
+                                        '海平面上升','海平面上升','海平面上升',
+                                        '極地渦旋侵襲','極地渦旋侵襲','極地渦旋侵襲',
+                                        '持續性乾旱','持續性乾旱','持續性乾旱','持續性乾旱',
+                                        '超級熱帶風暴','超級熱帶風暴',
+                                        '森林野火','森林野火','森林野火',
+                                        '炸彈低壓侵襲','炸彈低壓侵襲',
+                                        '年度大潮海水倒灌','年度大潮海水倒灌','年度大潮海水倒灌',
+                                        '破紀錄洪水','破紀錄洪水',
+                                        '破紀錄熱浪','破紀錄熱浪','破紀錄熱浪','破紀錄熱浪','破紀錄熱浪',
+                                        '沙塵暴',
+                                        '梅雨鋒面極端暴雨','梅雨鋒面極端暴雨',
+                                        '綠色減緩投資獎勵金',
+                                        '能源轉型發展促進金',
+
+                                    ];
+            eventSubtitles =        [
+                                        'Sea Level Rise','Sea Level Rise','Sea Level Rise',
+                                        'Polar Vortex','Polar Vortex','Polar Vortex',
+                                        'Persistent Drought','Persistent Drought','Persistent Drought','Persistent Drought',
+                                        'Super Tropical Cyclone','Super Tropical Cyclone',
+                                        'Forest Wildfire','Forest Wildfire','Forest Wildfire',
+                                        'Explosive Cyclone','Explosive Cyclone',
+                                        'Seawater Inundation','Seawater Inundation','Seawater Inundation',
+                                        'Record-breaking Flood','Record-breaking Flood',
+                                        'Record-breaking Heatwave','Record-breaking Heatwave','Record-breaking Heatwave','Record-breaking Heatwave','Record-breaking Heatwave',
+                                        'Dust Storm',
+                                        'Extreme Rainfall in Mei-Yu Front','Extreme Rainfall in Mei-Yu Front',
+                                        'Green Investment Incentive',
+                                        'Energy Transition Incentive',
+                                   
+                                    ];
+            eventRegions =          [
+                                        'REGION D','REGION E','REGION F',
+                                        'REGION A','REGION B','REGION F',
+                                        'REGION A','REGION B','REGION E','REGION F',
+                                        'REGION C','REGION D',
+                                        'REGION A','REGION B','REGION C',
+                                        'REGION A','REGION F',
+                                        'REGION D','REGION E','REGION F',
+                                        'REGION B','REGION C',
+                                        'REGION A','REGION B','REGION C','REGION E','REGION F',
+                                        'REGION E',
+                                        'REGION C','REGION D',
+                                        '場上具有最多碳徽章的玩家可獲得額外獎勵，若同分則無',
+                                        '玩家本身可獲得額外獎勵，建議用於投資先進綠色能源',
+                                    
+                                    ];
+            eventPenalities =       [
+                                        -15, -15, -15,
+                                        -20, -15, -10,
+                                        -10, -15, -20, -10,
+                                        -20, -20,
+                                        -10, -10, -15,
+                                        -15, -15,
+                                        -10, -10, -10,
+                                        -20, -15,
+                                        -15, -15, -15, -15, -15,
+                                        -10,
+                                        -20, -20,
+                                        30,
+                                        30,
+                                    
+                                    
+                                    ];
+            eventEnvironsRequired = [
+                                        0.3, 0.3, 0.2,
+                                        0.4, 0.2, 0.1,
+                                        0.2, 0.1, 0.3, 0.3,
+                                        0.2, 0.3,
+                                        0.3, 0.3, 0.5,
+                                        0.1, 0.1,
+                                        0.2, 0.2, 0.2,
+                                        0.2, 0.2,
+                                        0.3, 0.3, 0.4, 0.5, 0.2,
+                                        0.3,
+                                        0.2, 0.2,
+                                        0.0,
+                                        0.0,
+                                    
+                                    
+                                    ];
+            eventHeatsRequired =    [
+                                        0.0, 0.0, 0.0,
+                                        0.0, 0.0, 0.0,
+                                        0.5, 0.7, 0.9, 0.6,
+                                        0.0, 0.0,
+                                        0.6, 0.6, 0.7,
+                                        0.0, 0.0,
+                                        0.0, 0.0, 0.0,
+                                        0.0, 0.0,
+                                        0.6, 0.6, 1.0, 1.2, 0.7,
+                                        0.8,
+                                        0.0, 0.0,
+                                        0.0,
+                                        0.0,
+                                    
+                                    
+                                    ];
+            eventColdsRequired =    [
+                                        0.0, 0.0, 0.0,
+                                        0.8, 0.6, 0.5,
+                                        0.0, 0.0, 0.0, 0.0,
+                                        0.0, 0.0, 
+                                        0.0, 0.0, 0.0,
+                                        0.8, 0.7,
+                                        0.0, 0.0, 0.0,
+                                        0.0, 0.0,
+                                        0.0, 0.0, 0.0, 0.0, 0.0,
+                                        0.0,
+                                        0.0, 0.0,
+                                        0.0,
+                                        0.0,
+                                    
+                                    
+
+                                    ];
+            eventCoastalsRequired = [
+                                        0.7, 0.4, 0.8,
+                                        0.0, 0.0, 0.0,
+                                        0.0, 0.0, 0.0, 0.0,
+                                        0.0, 0.5,
+                                        0.0, 0.0, 0.0,
+                                        0.0, 0.4,
+                                        0.5, 0.3, 0.6,
+                                        0.0, 0.6,
+                                        0.0, 0.0, 0.0, 0.0, 0.0,
+                                        0.0,
+                                        0.0, 0.4,
+                                        0.0,
+                                        0.0,
+                                    
+                                    
+                                    
+                                    ];
+            eventFloodsRequired =   [
+                                        0.3, 0.3, 0.5,
+                                        0.0, 0.0, 0.0,
+                                        0.0, 0.0, 0.0, 0.0,
+                                        0.8, 1.1,
+                                        0.0, 0.0, 0.0,
+                                        0.3, 0.1,
+                                        0.0, 0.0, 0.0,
+                                        0.7, 0.8,
+                                        0.0, 0.0, 0.0, 0.0, 0.0,
+                                        0.0,
+                                        0.7, 0.9,
+                                        0.0,
+                                        0.0,
+                                    ];
+
+            // 確保所有事件的數量一致
+            if (eventTitles.length != eventSubtitles.length || eventTitles.length != eventRegions.length || eventTitles.length != eventPenalities.length || eventTitles.length != eventEnvironsRequired.length || eventTitles.length != eventHeatsRequired.length || eventTitles.length != eventColdsRequired.length || eventTitles.length != eventCoastalsRequired.length || eventTitles.length != eventFloodsRequired.length) {
+                console.error('The number of events does not match; in which', eventTitles.length, 'event titles are provided,', eventSubtitles.length, 'event subtitles are provided,', eventRegions.length, 'event regions are provided,', eventPenalities.length, 'event penalities are provided,', eventEnvironsRequired.length, 'event environs are provided,', eventHeatsRequired.length, 'event heats are provided,', eventColdsRequired.length, 'event colds are provided,', eventCoastalsRequired.length, 'event coastals are provided,', eventFloodsRequired.length, 'event floods are provided.');
+                return;
+            }
+
+            // 隨機選擇一個事件
+            randomIndex = Math.floor(Math.random() * eventTitles.length);
+
+            // 更改 title, subtitle, region, penality
+            popup.querySelector('.event-title').textContent = eventTitles[randomIndex];
+            popup.querySelector('.event-subtitle').textContent = eventSubtitles[randomIndex];
+            popup.querySelector('.event-region').textContent = eventRegions[randomIndex];
+            popup.querySelector('.event-penality').textContent = '$' + Math.floor((eventPenalities[randomIndex] * warmingDegree/3));
+
+            // 獲取彈窗中的元素
+            const environIconContainer = popup.querySelector('.environ-icons');
+            const heatIconContainer = popup.querySelector('.heat-icons');
+            const coldIconContainer = popup.querySelector('.cold-icons');
+            const coastalIconContainer = popup.querySelector('.coastal-icons');
+            const floodIconContainer = popup.querySelector('.flood-icons');
+            
+            // 清空原有的圖標
+            environIconContainer.innerHTML = '';
+            heatIconContainer.innerHTML = '';
+            coldIconContainer.innerHTML = '';
+            coastalIconContainer.innerHTML = '';
+            floodIconContainer.innerHTML = ''; 
+            
+            // 制定顯示的圖標數量
+            if (isHardMode) {
+                // 乘上暖化溫度的1.7次方再取整數
+                environIconAmount = Math.floor(eventEnvironsRequired[randomIndex] * Math.pow(currentDegree, 1.7));
+                heatIconAmount = Math.floor(eventHeatsRequired[randomIndex] * Math.pow(currentDegree, 1.7));
+                coldIconAmount = Math.floor(eventColdsRequired[randomIndex] * Math.pow(currentDegree, 1.7));
+                coastalIconAmount = Math.floor(eventCoastalsRequired[randomIndex] * Math.pow(currentDegree, 1.7));
+                floodIconAmount = Math.floor(eventFloodsRequired[randomIndex] * Math.pow(currentDegree, 1.7));
+            } else {
+                // 乘上暖化溫度的1.3次方再取整數
+                environIconAmount = Math.floor(eventEnvironsRequired[randomIndex] * Math.pow(currentDegree, 1.3));
+                heatIconAmount = Math.floor(eventHeatsRequired[randomIndex] * Math.pow(currentDegree, 1.3));
+                coldIconAmount = Math.floor(eventColdsRequired[randomIndex] * Math.pow(currentDegree, 1.3));
+                coastalIconAmount = Math.floor(eventCoastalsRequired[randomIndex] * Math.pow(currentDegree, 1.3));
+                floodIconAmount = Math.floor(eventFloodsRequired[randomIndex] * Math.pow(currentDegree, 1.3));
+            }
+            
+            // if those values are zero, set penality to zero
+            if (environIconAmount + heatIconAmount + coldIconAmount + coastalIconAmount + floodIconAmount == 0) {
+                // if the penality is not zero, show the penality
+                if (eventPenalities[randomIndex] > 0) {
+                    popup.querySelector('.event-penality').textContent = '$' + Math.floor((eventPenalities[randomIndex]));
+                }
+                else {
+                    popup.querySelector('.event-penality').textContent = '$0';
+                    // hide the penality buttons
+                    popup.querySelector('.penalty-btn-container').style.display = 'none';
+                    
+                }
+            
+            } else {
+                // show the penality buttons
+                popup.querySelector('.penalty-btn-container').style.display = 'flex';
+            }
+            
+            // 添加若干個.png圖標
+            for (let i = 0; i < environIconAmount; i++) {
+                const img = document.createElement('img');
+                img.src = 'Environ.png';
+                img.alt = 'Environ Icon';
+                environIconContainer.appendChild(img);
+            }
+            for (let i = 0; i < heatIconAmount; i++) {
+                const img = document.createElement('img');
+                img.src = 'Heat.png';
+                img.alt = 'Heat Icon';
+                heatIconContainer.appendChild(img);
+            }
+            for (let i = 0; i < coldIconAmount; i++) {
+                const img = document.createElement('img');
+                img.src = 'Cold.png';
+                img.alt = 'Cold Icon';
+                coldIconContainer.appendChild(img);
+            }
+            for (let i = 0; i < coastalIconAmount; i++) {
+                const img = document.createElement('img');
+                img.src = 'Coastal.png';
+                img.alt = 'Coastal Icon';
+                coastalIconContainer.appendChild(img);
+            }
+            for (let i = 0; i < floodIconAmount; i++) {
+                const img = document.createElement('img');
+                img.src = 'Flood.png';
+                img.alt = 'Flood Icon';
+                floodIconContainer.appendChild(img);
+            }
+
+            // Username buttons text use the player name at the score board
+            const penaltyBtns = popup.querySelectorAll('.penality-btn button');
+            document.querySelectorAll('.player-name').forEach((player, index) => {
+                penaltyBtns[index].textContent = player.value;
+            });
+
+            popup.classList.add('show');
+        }
+
+        // 關閉彈窗的函數
+        function closeEventPopup() {
+            const popup = document.getElementById('event-popup');
+            popup.classList.remove('show');
+            }
+
+            // 為關閉按鈕添加事件監聽器
+            document.querySelector('.close-btn').addEventListener('click', closeEventPopup);
+
+            // 點擊彈窗外部區域也可以關閉彈窗
+            window.addEventListener('click', function(event) {
+            const popup = document.getElementById('event-popup');
+            if (event.target == popup) {
+                closeEventPopup();
+            }
+        });
+
+        function closeEventPopupWithPenalty(player) {
+            const popup = document.getElementById('event-popup');
+            const penalities = popup.querySelector('.event-penality').textContent;
+            const scoreElement = document.querySelector('.quadrant:nth-child(' + player + ') .score');
+            let score = parseInt(scoreElement.textContent);
+            score += parseInt(penalities.substring(1));
+            scoreElement.textContent = score;
+            if (score < 0) {
+                scoreElement.style.color = '#b12';
+            } else {
+                scoreElement.style.color = '';
+            }
+            closeEventPopup();
+        }
+
+        
+
+       
+        function updateWarmingDegree(value) {
+            let currentDegree = parseFloat(document.querySelector('.total-score').textContent);
+            let newDegree = Math.round((value) * 10) / 10;  // Round to 1 decimal place
+            document.querySelector('.total-score').textContent = newDegree.toFixed(1) + '°C';
+        }
+
+        let isDevMode = false;
+
+        function toggleDevMode() {
+            isDevMode = !isDevMode;
+            document.getElementById('dev-console').classList.toggle('hidden');
+            if (isDevMode) {
+                // 覆蓋 console.log 方法
+                const oldLog = console.log;
+                console.log = function(...args) {
+                oldLog.apply(console, args);
+                updateDevConsole(args.join(' '));
+                };
+            } else {
+                // 恢復原始的 console.log 方法
+                console.log = console.log;
+            }
+            }
+        
+        let lineid = 0;
+        function updateDevConsole(message) {
+            // get the current lines of console output
+            const consoleOutput = document.getElementById('dev-console-output');
+            lineid += 1;
+            // add the line id as [line number] message at the beginning of the message
+            message = '[' + lineid + '] ' + message;
+            consoleOutput.textContent += message + '\n';
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const darkModeToggle = document.getElementById('show-cfp-toggle');
+        const body = document.body;
+        const carbonfootprintDisplay = document.getElementById('carbonfootprint-display');
+
+        darkModeToggle.addEventListener('change', function() {
+        if (this.checked) {
+            body.classList.add('show-cfp');
+            carbonfootprintDisplay.style.display = 'block';
+        } else {
+            body.classList.remove('show-cfp');
+            carbonfootprintDisplay.style.display = 'none';
+       
+        }
+        });
+        function showMapPopup() {
+            const mapPopup = document.getElementById('map-popup');
+            mapPopup.classList.add('show');
+            // settings panel should be closed
+            document.getElementById('settings-panel').classList.remove('open');
+       
+        }
+
+        function closeMapPopup() {
+            const mapPopup = document.getElementById('map-popup');
+            mapPopup.classList.remove('show');
+        }
+
+        // 為 INSPECT MAP 按鈕添加點擊事件
+        document.querySelector('.inspect-map').addEventListener('click', showMapPopup);
+
+        // 為地圖彈出窗口的關閉按鈕添加點擊事件
+        document.querySelector('#map-popup .close-btn').addEventListener('click', closeMapPopup);
+
+        // 點擊地圖外部區域關閉地圖
+        document.getElementById('map-popup').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeMapPopup();
+        }
+        });
+
+    });
+    </script>
+</body>
+</html>
